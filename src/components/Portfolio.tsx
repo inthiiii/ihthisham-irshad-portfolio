@@ -146,13 +146,13 @@ const signatureCapabilities = [
     title: "Surgical OS",
     text: "A voice-only, hands-free interaction layer designed so doctors can navigate supported clinical workflows without touching the device.",
     state: "Working concept",
-    image: "/images/project-vitalis.jpg",
-    imageAlt: "Conceptual medical AI interface representing the Vitalis Surgical OS",
+    image: "/images/surgical-os-voice-control.jpg",
+    imageAlt: "Surgeon using voice to control clinical imaging while both hands remain occupied",
   },
   {
     project: "ARA",
     title: "Personal computing layer",
-    text: "Deep device control beyond conventional assistant boundaries, expressed through ARA Drop, contextual Writing Tools, and the ambient ARA Orb.",
+    text: "Designed to move beyond—and ultimately overtake—the limitations of Siri through deeper device control, ARA Drop, contextual Writing Tools, and the ambient ARA Orb.",
     state: "Flagship direction",
     image: "/images/project-ara.jpg",
     imageAlt: "Ambient personal AI interface representing ARA",
@@ -289,7 +289,7 @@ export default function Portfolio() {
     <main>
       <a href="#main-content" className="skip-link">Skip to content</a>
       <header className="site-header">
-        <a className="monogram" href="#top" aria-label="Ihthisham Irshad, home">II<span>.</span></a>
+        <a className="monogram" href="#top" aria-label="Ihthisham Irshad, home">Ihthi<span>.</span></a>
         <nav aria-label="Primary navigation" className={menuOpen ? "nav-open" : ""}>
           {navItems.map((item) => <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)}>{item}</a>)}
         </nav>
@@ -395,7 +395,7 @@ export default function Portfolio() {
             <Reveal className="section-label"><span>05</span><p>Learning & proof</p></Reveal>
             <Reveal className="education-card">
               <p className="eyebrow">Education</p>
-              <h2><span>BSc in Information Technology</span><strong>Data Science</strong></h2>
+              <h2><span>BSc IT Specialized in</span><strong>Data Science</strong></h2>
               <p>Specialization focused on machine learning, analytics, and intelligent data systems.</p>
               <div><span>SLIIT</span><span>2023 — Present</span></div>
               <button className="outside-button" onClick={() => setShowOutOfScope(true)}>Out-of-scope knowledge <Arrow direction="right" /></button>
