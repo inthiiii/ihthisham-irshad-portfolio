@@ -97,7 +97,7 @@ button { font:inherit; }
 .signature-heading h3 em { display:block; font-family:Georgia,"Times New Roman",serif; font-weight:400; color:var(--accent); }
 .signature-grid { grid-column:2; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:42px; }
 .signature-card { min-height:470px; padding:0; background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018)); border:1px solid var(--line); display:flex; flex-direction:column; overflow:hidden; }
-.signature-visual { position:relative; min-height:205px; overflow:hidden; background:var(--panel); }
+.signature-visual { position:relative; height:205px; min-height:205px; flex:0 0 205px; overflow:hidden; background:var(--panel); }
 .signature-visual::after { content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(8,10,9,.55),transparent 60%); }
 .signature-visual img { display:block; width:100%; height:100%; object-fit:cover; filter:saturate(.78) contrast(1.04); transition:transform .7s cubic-bezier(.22,1,.36,1),filter .4s ease; }
 .signature-card:hover .signature-visual img { transform:scale(1.035); filter:saturate(.95) contrast(1.04); }
@@ -164,7 +164,8 @@ button { font:inherit; }
 
 .modal-backdrop { position:fixed; inset:0; z-index:100; padding:5vh 18px; background:rgba(2,4,3,.76); backdrop-filter:blur(22px); overflow-y:auto; display:flex; align-items:center; justify-content:center; }
 .project-modal,.knowledge-modal { position:relative; width:min(860px,100%); max-height:90vh; overflow:auto; overscroll-behavior:contain; background:#121614; border:1px solid rgba(255,255,255,.16); border-radius:30px; box-shadow:0 40px 120px rgba(0,0,0,.58); scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.2) transparent; }
-.modal-close { position:absolute; z-index:6; right:16px; top:16px; width:40px; height:40px; border-radius:50%; border:1px solid rgba(255,255,255,.28); color:white; background:rgba(8,10,9,.74); backdrop-filter:blur(10px); cursor:pointer; font-size:25px; line-height:1; }
+.modal-close { position:absolute; z-index:6; right:16px; top:16px; width:40px; height:40px; padding:0; display:grid; place-items:center; border-radius:50%; border:1px solid rgba(255,255,255,.28); color:white; background:rgba(8,10,9,.74); backdrop-filter:blur(10px); cursor:pointer; font-size:25px; line-height:1; }
+.modal-close span { display:block; width:1em; height:1em; line-height:.92; text-align:center; transform:translateY(-1px); }
 .modal-image { position:relative; aspect-ratio:2.5; min-height:230px; background:var(--panel); border-radius:29px 29px 0 0; overflow:hidden; }
 .modal-image img { object-fit:cover; }
 .browser-bar { position:absolute; inset:0 0 auto; height:42px; display:flex; align-items:center; gap:7px; padding:0 14px; color:#565a55; background:#ecece6; border-bottom:1px solid rgba(8,10,9,.15); }
