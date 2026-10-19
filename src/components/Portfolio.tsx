@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Project = {
   id: string; name: string; eyebrow: string; short: string; description: string;
@@ -174,6 +174,41 @@ const signatureCapabilities = [
     imageAlt: "Geospatial commodity intelligence visualization for Lak-Arthika",
   },
 ];
+
+type IntelligenceNode = {
+  id: string; label: string; kind: "project" | "skill"; x: number; y: number; z: number; description: string;
+};
+
+const intelligenceNodes: IntelligenceNode[] = [
+  { id: "lak", label: "Lak-Arthika", kind: "project", x: -1.35, y: -.2, z: .65, description: "Geo-market intelligence built from commodity, regional, and temporal data." },
+  { id: "helio", label: "HelioSL", kind: "project", x: 1.25, y: -.65, z: .7, description: "Geospatial research for explainable renewable-energy planning." },
+  { id: "vitalis", label: "Vitalis", kind: "project", x: -.65, y: 1.05, z: .45, description: "Privacy-first medical AI, including a voice-led Surgical OS concept." },
+  { id: "ara", label: "ARA", kind: "project", x: .72, y: 1.02, z: .62, description: "A native personal-computing layer for deep, contextual device control." },
+  { id: "insight", label: "Insight", kind: "project", x: 1.38, y: .25, z: -.42, description: "Spatial knowledge through AR Notes Pinning and a connected Notes Web." },
+  { id: "spectra", label: "Spectra", kind: "project", x: -1.22, y: .4, z: -.52, description: "Agentic data science that plans, executes, and explains analysis." },
+  { id: "stickyy", label: "Stickyy", kind: "project", x: .25, y: -1.16, z: -.35, description: "A shipped native macOS product for frictionless persistent notes." },
+  { id: "vantage", label: "Vantage", kind: "project", x: -.18, y: .05, z: -1.25, description: "Local multimodal video retrieval using semantic embeddings." },
+  { id: "agentic", label: "Agentic AI", kind: "skill", x: -.25, y: .72, z: .05, description: "Planning, tools, state, and multi-step intelligent workflows." },
+  { id: "langgraph", label: "LangGraph", kind: "skill", x: -.72, y: .5, z: -.1, description: "Stateful orchestration for reliable agent workflows." },
+  { id: "rag", label: "RAG", kind: "skill", x: .12, y: .45, z: -.52, description: "Grounding model responses in relevant, retrievable knowledge." },
+  { id: "multimodal", label: "Multimodal ML", kind: "skill", x: .15, y: .02, z: .2, description: "Working across language, images, video, and structured context." },
+  { id: "pytorch", label: "PyTorch", kind: "skill", x: -.55, y: -.2, z: -.25, description: "Model development and accelerated local inference." },
+  { id: "vector", label: "Vector Search", kind: "skill", x: -.72, y: -.72, z: -.55, description: "Semantic retrieval with FAISS, ChromaDB, and Pinecone." },
+  { id: "geo", label: "Geospatial", kind: "skill", x: .58, y: -.55, z: .18, description: "Location-aware analysis, GeoJSON, and spatial intelligence." },
+  { id: "data", label: "Data Engineering", kind: "skill", x: -.45, y: -.82, z: .52, description: "Reliable ingestion, validation, transformation, and analytical pipelines." },
+  { id: "fastapi", label: "FastAPI", kind: "skill", x: .6, y: .15, z: -.7, description: "Production-minded Python services for AI applications." },
+  { id: "next", label: "Next.js", kind: "skill", x: .9, y: -.12, z: -.12, description: "Responsive product interfaces for intelligent systems." },
+  { id: "vision", label: "Computer Vision", kind: "skill", x: -.15, y: -.45, z: -.92, description: "Visual embeddings, scene understanding, and image-driven workflows." },
+  { id: "product", label: "Product Engineering", kind: "skill", x: .18, y: -.68, z: .88, description: "Turning technical ideas into coherent, usable products." },
+];
+
+const intelligenceLinks: [string, string][] = [
+  ["lak", "geo"], ["lak", "data"], ["lak", "pytorch"], ["helio", "geo"], ["helio", "data"], ["helio", "next"],
+  ["vitalis", "multimodal"], ["vitalis", "rag"], ["vitalis", "fastapi"], ["ara", "agentic"], ["ara", "rag"], ["ara", "product"],
+  ["insight", "geo"], ["insight", "next"], ["insight", "product"], ["spectra", "agentic"], ["spectra", "langgraph"], ["spectra", "fastapi"],
+  ["stickyy", "product"], ["stickyy", "next"], ["vantage", "multimodal"], ["vantage", "vision"], ["vantage", "vector"],
+  ["agentic", "langgraph"], ["rag", "vector"], ["multimodal", "pytorch"], ["data", "fastapi"],
+];
 const navItems = ["About", "Projects", "Skills", "Experience", "Credentials", "Contact"];
 
 function Arrow({ direction = "up" }: { direction?: "up" | "right" }) {
@@ -185,6 +220,180 @@ function Reveal({ children, className = "" }: { children: React.ReactNode; class
   return (
     <motion.div className={className} initial={reduceMotion ? false : { opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
       {children}
+    </motion.div>
+  );
+}
+
+function IntelligenceMapModal({ onClose }: { onClose: () => void }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const projectedRef = useRef<{ id: string; x: number; y: number; radius: number }[]>([]);
+  const rotationRef = useRef({ x: -.12, y: -.32 });
+  const dragRef = useRef({ active: false, moved: false, x: 0, y: 0 });
+  const [activeId, setActiveId] = useState("ara");
+  const reduceMotion = useReducedMotion();
+  const activeNode = intelligenceNodes.find((node) => node.id === activeId) ?? intelligenceNodes[0];
+  const connectedIds = useMemo(() => new Set(intelligenceLinks.flatMap(([from, to]) => from === activeId ? [to] : to === activeId ? [from] : [])), [activeId]);
+  const connectedNodes = intelligenceNodes.filter((node) => connectedIds.has(node.id));
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    const handleKey = (event: KeyboardEvent) => event.key === "Escape" && onClose();
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKey);
+    closeRef.current?.focus();
+    return () => { document.body.style.overflow = previousOverflow; window.removeEventListener("keydown", handleKey); };
+  }, [onClose]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    let frame = 0;
+    let width = 0;
+    let height = 0;
+    let pixelRatio = 1;
+
+    const resize = () => {
+      const bounds = canvas.getBoundingClientRect();
+      width = bounds.width;
+      height = bounds.height;
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(width * pixelRatio);
+      canvas.height = Math.round(height * pixelRatio);
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    };
+
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
+    resize();
+
+    const draw = () => {
+      if (!reduceMotion && !dragRef.current.active) rotationRef.current.y += .0007;
+      context.clearRect(0, 0, width, height);
+      const { x: angleX, y: angleY } = rotationRef.current;
+      const cosX = Math.cos(angleX), sinX = Math.sin(angleX), cosY = Math.cos(angleY), sinY = Math.sin(angleY);
+      const scale = Math.min(width, height) * .29;
+      const projected = intelligenceNodes.map((node) => {
+        const x1 = node.x * cosY - node.z * sinY;
+        const z1 = node.x * sinY + node.z * cosY;
+        const y1 = node.y * cosX - z1 * sinX;
+        const z2 = node.y * sinX + z1 * cosX;
+        const perspective = 3.7 / (3.7 + z2);
+        return { ...node, sx: width / 2 + x1 * scale * perspective, sy: height / 2 + y1 * scale * perspective, depth: z2, perspective };
+      }).sort((a, b) => b.depth - a.depth);
+      const byId = new Map(projected.map((node) => [node.id, node]));
+
+      intelligenceLinks.forEach(([from, to]) => {
+        const a = byId.get(from), b = byId.get(to);
+        if (!a || !b) return;
+        const emphasized = from === activeId || to === activeId;
+        const gradient = context.createLinearGradient(a.sx, a.sy, b.sx, b.sy);
+        gradient.addColorStop(0, emphasized ? "rgba(165,225,210,.72)" : "rgba(165,225,210,.14)");
+        gradient.addColorStop(1, emphasized ? "rgba(232,189,118,.62)" : "rgba(232,189,118,.08)");
+        context.beginPath();
+        context.moveTo(a.sx, a.sy);
+        context.lineTo(b.sx, b.sy);
+        context.strokeStyle = gradient;
+        context.lineWidth = emphasized ? 1.5 : .75;
+        context.stroke();
+      });
+
+      projected.forEach((node) => {
+        const active = node.id === activeId;
+        const connected = connectedIds.has(node.id);
+        const baseRadius = node.kind === "project" ? 8.5 : 4.5;
+        const radius = baseRadius * node.perspective * (active ? 1.5 : 1);
+        context.beginPath();
+        context.arc(node.sx, node.sy, radius * 3.2, 0, Math.PI * 2);
+        const glow = context.createRadialGradient(node.sx, node.sy, 0, node.sx, node.sy, radius * 3.2);
+        glow.addColorStop(0, active ? "rgba(232,189,118,.38)" : node.kind === "project" ? "rgba(165,225,210,.2)" : "rgba(165,225,210,.12)");
+        glow.addColorStop(1, "rgba(165,225,210,0)");
+        context.fillStyle = glow;
+        context.fill();
+        context.beginPath();
+        context.arc(node.sx, node.sy, radius, 0, Math.PI * 2);
+        context.fillStyle = active ? "#e8bd76" : node.kind === "project" ? "#a5e1d2" : connected ? "#d9efe8" : "rgba(194,208,201,.72)";
+        context.fill();
+        if (node.kind === "project" || active) {
+          context.font = `${active ? 600 : 500} ${active ? 13 : 11}px Helvetica Neue, Arial`;
+          context.fillStyle = active ? "#f4efe2" : "rgba(224,226,220,.78)";
+          context.textAlign = "center";
+          context.fillText(node.label, node.sx, node.sy - radius - 10);
+        }
+      });
+
+      projectedRef.current = projected.map((node) => ({ id: node.id, x: node.sx, y: node.sy, radius: node.kind === "project" ? 18 : 13 }));
+      frame = requestAnimationFrame(draw);
+    };
+
+    draw();
+    return () => { cancelAnimationFrame(frame); observer.disconnect(); };
+  }, [activeId, connectedIds, reduceMotion]);
+
+  const getPoint = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+  };
+
+  const pickNode = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const point = getPoint(event);
+    return projectedRef.current.reduce<{ id: string; distance: number } | null>((closest, node) => {
+      const distance = Math.hypot(node.x - point.x, node.y - point.y);
+      return distance <= node.radius && (!closest || distance < closest.distance) ? { id: node.id, distance } : closest;
+    }, null);
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const point = getPoint(event);
+    dragRef.current = { active: true, moved: false, x: point.x, y: point.y };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!dragRef.current.active) return;
+    const point = getPoint(event);
+    const dx = point.x - dragRef.current.x, dy = point.y - dragRef.current.y;
+    if (Math.abs(dx) + Math.abs(dy) > 2) dragRef.current.moved = true;
+    rotationRef.current.y += dx * .006;
+    rotationRef.current.x = Math.max(-1, Math.min(1, rotationRef.current.x + dy * .004));
+    dragRef.current.x = point.x;
+    dragRef.current.y = point.y;
+  };
+
+  const handlePointerUp = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!dragRef.current.moved) {
+      const picked = pickNode(event);
+      if (picked) setActiveId(picked.id);
+    }
+    dragRef.current.active = false;
+  };
+
+  return (
+    <motion.div className="modal-backdrop intelligence-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      <motion.div role="dialog" aria-modal="true" aria-labelledby="intelligence-map-title" className="intelligence-modal" initial={{ opacity: 0, y: 20, scale: .985 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: .99 }} transition={{ duration: .3 }}>
+        <button ref={closeRef} type="button" className="modal-close" onClick={onClose} aria-label="Close intelligence map"><span aria-hidden="true">×</span></button>
+        <div className="intelligence-header">
+          <div><p className="eyebrow">Interactive intelligence map</p><h2 id="intelligence-map-title">Where projects<br /><em>connect to capability.</em></h2></div>
+          <p>Each neuron is a real project or skill. Connections reveal the engineering relationships between them—not decorative noise.</p>
+        </div>
+        <div className="intelligence-stage">
+          <canvas ref={canvasRef} role="img" aria-label="Interactive 3D network of Ihthisham's projects and technical skills. Drag to rotate and select a neuron to inspect it." onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={() => { dragRef.current.active = false; }} />
+          <div className="network-key" aria-hidden="true"><span><i className="project-dot" /> Projects</span><span><i /> Skills</span></div>
+          <div className="network-instruction" aria-hidden="true">Drag to orbit · Select a neuron</div>
+          <button type="button" className="network-reset" onClick={() => { rotationRef.current = { x: -.12, y: -.32 }; setActiveId("ara"); }}>Reset view</button>
+        </div>
+        <aside className="intelligence-detail" aria-live="polite">
+          <p className="eyebrow">{activeNode.kind}</p>
+          <h3>{activeNode.label}</h3>
+          <p>{activeNode.description}</p>
+          <div><span>Connected intelligence</span>{connectedNodes.map((node) => <button type="button" key={node.id} onClick={() => setActiveId(node.id)}>{node.label}</button>)}</div>
+        </aside>
+        <div className="network-node-list" aria-label="All intelligence map nodes">
+          {intelligenceNodes.map((node) => <button type="button" key={node.id} aria-pressed={node.id === activeId} className={node.id === activeId ? "active" : ""} onClick={() => setActiveId(node.id)}>{node.label}</button>)}
+        </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -285,6 +494,7 @@ export default function Portfolio() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showOutOfScope, setShowOutOfScope] = useState(false);
+  const [showIntelligenceMap, setShowIntelligenceMap] = useState(false);
   return (
     <main>
       <a href="#main-content" className="skip-link">Skip to content</a>
@@ -302,7 +512,7 @@ export default function Portfolio() {
           <p className="hero-kicker"><span /> AI / Machine Learning Developer</p>
           <h1>I build intelligent systems<em> with depth.</em></h1>
           <p className="hero-intro">I’m M. Ihthisham Irshad. I work across agentic AI, multimodal machine learning, and data intelligence—turning ambitious ideas into considered systems.</p>
-          <div className="hero-actions"><a className="button primary" href="#projects">Explore selected work <Arrow direction="right" /></a><a className="text-link" href="/files/ihthisham-irshad-cv.pdf" target="_blank">Read CV <Arrow /></a></div>
+          <div className="hero-actions"><a className="button primary" href="#projects">Explore selected work <Arrow direction="right" /></a><button type="button" className="button secondary" onClick={() => setShowIntelligenceMap(true)}>Explore intelligence map <Arrow direction="right" /></button><a className="text-link" href="/files/ihthisham-irshad-cv.pdf" target="_blank">Read CV <Arrow /></a></div>
         </motion.div>
         <motion.div className="hero-portrait" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.1, delay: 0.15 }}>
           <div className="portrait-frame"><Image src="/images/ihthisham-profile.png" alt="Portrait of M. Ihthisham Irshad" fill priority sizes="(max-width: 800px) 72vw, 38vw" /></div>
@@ -428,6 +638,7 @@ export default function Portfolio() {
       <AnimatePresence>
         {selectedProject && <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />}
         {showOutOfScope && <KnowledgeModal onClose={() => setShowOutOfScope(false)} />}
+        {showIntelligenceMap && <IntelligenceMapModal onClose={() => setShowIntelligenceMap(false)} />}
       </AnimatePresence>
     </main>
   );
