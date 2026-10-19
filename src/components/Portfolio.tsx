@@ -6,8 +6,10 @@ import { useEffect, useRef, useState } from "react";
 
 type Project = {
   id: string; name: string; eyebrow: string; short: string; description: string;
-  image: string; github: string; live?: string; status?: string; stack: string[];
+  image: string; github?: string; live?: string; download?: string; status?: string; stack: string[];
   detail: string[]; featured?: boolean; team?: { name: string; url: string }[];
+  featureCards?: { title: string; text: string }[]; futureScope?: string[];
+  websitePreview?: string; hintImage?: string;
 };
 
 const projects: Project[] = [
@@ -21,6 +23,31 @@ const projects: Project[] = [
       "Modular ingestion, preprocessing, validation, and analytical workflows for commodity-market data.",
       "Geospatial data services and interactive trend exploration designed for a production-minded architecture.",
       "Research-heavy engineering work with forecasting and spatial intelligence as deliberate areas of development.",
+    ],
+    featureCards: [
+      { title: "Geo-Market Intelligence", text: "A unified analytical layer connecting commodity movement over time with the regions and market contexts where it happens." },
+    ],
+  },
+  {
+    id: "heliosl", name: "HelioSL", eyebrow: "Green energy / Geospatial research",
+    short: "A researched energy-intelligence system building a stronger data foundation for Sri Lanka's green transition.",
+    description: "HelioSL combines environmental research, geospatial analysis, and product engineering to make renewable-energy planning more explainable and accessible.",
+    image: "/images/project-heliosl.jpg", github: "https://github.com/inthiiii/HelioSL", featured: true,
+    stack: ["Energy analytics", "Geospatial data", "Research", "Decision intelligence", "Full-stack"],
+    detail: [
+      "Layers location-aware environmental signals into a unified view of renewable-energy potential across Sri Lanka.",
+      "Turns research and geospatial evidence into an explorable intelligence product rather than a static report.",
+      "Designed collaboratively with a product-level architecture and a long-term national-impact perspective.",
+    ],
+    futureScope: [
+      "Higher-resolution solar, wind, terrain, and infrastructure datasets for stronger site-level analysis.",
+      "Scenario modelling that helps compare energy mixes, regional constraints, and long-term environmental outcomes.",
+      "Decision-support workflows for researchers, communities, institutions, and clean-energy planners.",
+    ],
+    team: [
+      { name: "Kiruthika", url: "https://www.linkedin.com/in/kiruthika54/" },
+      { name: "Sivamathuran", url: "https://www.linkedin.com/in/sivamathuran/" },
+      { name: "Brammawaxanan", url: "https://www.linkedin.com/in/brammawaxanan14/" },
     ],
   },
   {
@@ -39,19 +66,27 @@ const projects: Project[] = [
     id: "ara", name: "ARA", eyebrow: "Personal AI / macOS",
     short: "A powerful personal-assistant concept working toward deeply contextual, Jarvis-like computing on the Mac.",
     description: "ARA explores what a native personal AI can become when local models, cloud models, and operating-system context are treated as one system.",
-    image: "/images/project-ara.jpg", github: "https://github.com/inthiiii/ARA-Virtual-Assistant",
-    stack: ["Python", "macOS", "Local LLMs", "Cloud LLMs", "Automation"],
+    image: "/images/project-ara.jpg", featured: true,
+    stack: ["Python", "macOS", "Local LLMs", "Cloud LLMs", "Deep device control"],
     detail: [
-      "Designed as a native assistant rather than a chatbot wrapped in a desktop window.",
-      "Explores contextual automation with a deliberate local/cloud model boundary.",
-      "Jarvis-level is the product direction—not a claim that every imagined capability is already shipped.",
+      "Designed as a native intelligence layer rather than a chatbot wrapped in a desktop window.",
+      "Works toward full-device context and control that moves beyond the narrow command boundaries of conventional voice assistants.",
+      "Explores a deliberate local/cloud model boundary so private, low-latency actions can stay on-device where appropriate.",
+      "Jarvis-level is the product direction—not a claim that every imagined capability is already complete.",
+    ],
+    featureCards: [
+      { title: "Deep Device Control", text: "Context-aware control across applications and system actions, designed to break past Siri-style limitations." },
+      { title: "ARA Drop", text: "A fast hand-off surface for giving files, screenshots, and context directly to the assistant." },
+      { title: "Writing Tools", text: "System-aware help for rewriting, refining, and acting on text wherever work is happening." },
+      { title: "ARA Orb", text: "A lightweight ambient interface for invoking ARA without interrupting the current workflow." },
     ],
   },
   {
     id: "stickyy", name: "Stickyy", eyebrow: "Shipped product / macOS utility",
     short: "A lightweight native scratchpad that keeps fast notes persistent, close, and out of the way.",
     description: "A focused desktop product built around a single promise: ideas should be immediately available without adding workflow friction.",
-    image: "/images/project-stickyy.jpg", github: "https://github.com/inthiiii/stickyy", live: "https://stickyyformac.vercel.app",
+    image: "/images/project-stickyy.jpg", github: "https://github.com/inthiiii/stickyy", live: "https://stickyyformac.vercel.app", websitePreview: "https://stickyyformac.vercel.app",
+    download: "https://github.com/inthiiii/stickyy/releases/download/v1.0.1/Stickyy-1.0.1.dmg",
     stack: ["macOS", "Native app", "Product design", "Vercel"],
     detail: [
       "Persistent notes with a deliberately lightweight interaction model.",
@@ -66,10 +101,12 @@ const projects: Project[] = [
     image: "/images/project-insight.jpg", github: "https://github.com/inthiiii/Insight-App-iOS", status: "Experimental",
     stack: ["iOS", "AR", "Knowledge graphs", "Machine learning"],
     detail: [
-      "AR note pinning places knowledge in physical context instead of a conventional list.",
+      "AR Notes Pinning explores attaching knowledge to real physical places instead of keeping every note inside a conventional list.",
       "A node-web view exposes relationships between ideas as a navigable graph.",
-      "The work is intentionally experimental and explores interaction possibilities rather than overstating production readiness.",
+      "The location-aware concept could let a user pin a note at a place and rediscover it when returning there.",
+      "This feature is actively being researched and refined; the goal is reliability and usefulness rather than premature claims of completion.",
     ],
+    hintImage: "/images/insight-ar-location-concept.jpg",
   },
   {
     id: "spectra", name: "Spectra", eyebrow: "Agentic analytics / Data systems",
@@ -81,23 +118,6 @@ const projects: Project[] = [
       "LangGraph-based planning coordinates analytical steps and Python generation.",
       "Sandboxed execution creates separation between generated code and the application runtime.",
       "Automated profiling and interactive visualization support exploratory analysis.",
-    ],
-  },
-  {
-    id: "heliosl", name: "HelioSL", eyebrow: "Green energy / Research",
-    short: "A researched energy-intelligence project exploring a stronger data foundation for Sri Lanka's green transition.",
-    description: "HelioSL brings environmental research, geospatial thinking, and engineering together around practical clean-energy planning.",
-    image: "/images/project-heliosl.jpg", github: "https://github.com/inthiiii/HelioSL",
-    stack: ["Energy analytics", "Geospatial data", "Research", "Full-stack"],
-    detail: [
-      "Explores location-aware signals relevant to renewable-energy decisions in Sri Lanka.",
-      "Frames green-energy information as a usable intelligence product, not a static report.",
-      "Built collaboratively with an emphasis on research depth and a product-level vision.",
-    ],
-    team: [
-      { name: "Kiruthika", url: "https://www.linkedin.com/in/kiruthika54/" },
-      { name: "Sivamathuran", url: "https://www.linkedin.com/in/sivamathuran/" },
-      { name: "Brammawaxanan", url: "https://www.linkedin.com/in/brammawaxanan14/" },
     ],
   },
   {
@@ -119,6 +139,33 @@ const skillGroups = [
   ["Data & Retrieval", "Pandas · SQL · FAISS · Pinecone · ChromaDB · GeoJSON"],
   ["Engineering", "Python · FastAPI · TypeScript · Next.js · Docker · REST APIs"],
   ["Cloud & Delivery", "GitHub CI/CD · AWS · Azure · Vercel · Model versioning"],
+];
+
+const signatureCapabilities = [
+  {
+    project: "Vitalis",
+    title: "Surgical OS",
+    text: "A voice-only, hands-free interaction layer designed so doctors can navigate supported clinical workflows without touching the device.",
+    state: "Working concept",
+  },
+  {
+    project: "ARA",
+    title: "Personal computing layer",
+    text: "Deep device control beyond conventional assistant boundaries, expressed through ARA Drop, contextual Writing Tools, and the ambient ARA Orb.",
+    state: "Flagship direction",
+  },
+  {
+    project: "Insight",
+    title: "Spatial knowledge",
+    text: "Notes Web connects ideas; AR Notes Pin researches location-based notes that can reappear when the user returns to the place where they were pinned.",
+    state: "Active research",
+  },
+  {
+    project: "Lak-Arthika",
+    title: "Geo-Market Intelligence",
+    text: "Connects commodity movement over time with regional and market context, turning fragmented data into one explorable intelligence layer.",
+    state: "Under development",
+  },
 ];
 const navItems = ["About", "Projects", "Skills", "Experience", "Credentials", "Contact"];
 
@@ -150,15 +197,39 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
     <motion.div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <motion.div role="dialog" aria-modal="true" aria-labelledby={`modal-${project.id}`} className="project-modal" initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.99 }} transition={{ duration: 0.28 }}>
         <button ref={closeRef} className="modal-close" onClick={onClose} aria-label="Close project details"><span aria-hidden="true">×</span></button>
-        <div className="modal-image"><Image src={project.image} alt="" fill sizes="(max-width: 800px) 100vw, 900px" /></div>
+        {project.websitePreview ? (
+          <div className="website-preview">
+            <div className="browser-bar" aria-hidden="true"><span /><span /><span /><p>stickyyformac.vercel.app</p></div>
+            <iframe src={project.websitePreview} title="Live preview of the Stickyy website" loading="lazy" />
+          </div>
+        ) : (
+          <div className="modal-image"><Image src={project.image} alt="" fill loading="eager" sizes="(max-width: 800px) 100vw, 820px" /></div>
+        )}
         <div className="modal-content">
-          <div>
+          <div className="modal-heading">
             <p className="eyebrow">{project.eyebrow}</p>
             <h2 id={`modal-${project.id}`}>{project.name}</h2>
             {project.status && <span className="status-pill">{project.status}</span>}
           </div>
           <p className="modal-lead">{project.description}</p>
           <ul className="detail-list">{project.detail.map((detail) => <li key={detail}>{detail}</li>)}</ul>
+          {project.featureCards && (
+            <div className="feature-cards">
+              {project.featureCards.map((feature) => <article key={feature.title}><h3>{feature.title}</h3><p>{feature.text}</p></article>)}
+            </div>
+          )}
+          {project.hintImage && (
+            <figure className="hint-image">
+              <div><Image src={project.hintImage} alt="Concept showing an AR note pinned to a physical location and rediscovered on return" fill sizes="(max-width: 800px) 92vw, 700px" /></div>
+              <figcaption><strong>AR Notes Pin — research direction</strong><span>Pin knowledge to a real place and surface it again when returning.</span></figcaption>
+            </figure>
+          )}
+          {project.futureScope && (
+            <div className="future-scope">
+              <p className="eyebrow">Future scope</p>
+              <div>{project.futureScope.map((item, index) => <article key={item}><span>{String(index + 1).padStart(2, "0")}</span><p>{item}</p></article>)}</div>
+            </div>
+          )}
           {project.team && (
             <div className="team-block">
               <p className="eyebrow">Project team</p>
@@ -167,10 +238,38 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
           )}
           <div className="tag-row">{project.stack.map((item) => <span key={item}>{item}</span>)}</div>
           <div className="modal-actions">
-            <a className="button primary" href={project.github} target="_blank" rel="noreferrer">View GitHub <Arrow /></a>
-            {project.live && <a className="button secondary" href={project.live} target="_blank" rel="noreferrer">Visit & download <Arrow /></a>}
+            {project.live && <a className="button primary" href={project.live} target="_blank" rel="noreferrer">Visit website <Arrow /></a>}
+            {project.download && <a className="button secondary" href={project.download} target="_blank" rel="noreferrer">Download app ↓</a>}
+            {project.github && <a className={`button ${project.live ? "quiet" : "primary"}`} href={project.github} target="_blank" rel="noreferrer">{project.live ? "View source" : "View GitHub"} <Arrow /></a>}
           </div>
         </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function KnowledgeModal({ onClose }: { onClose: () => void }) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const handleKey = (event: KeyboardEvent) => event.key === "Escape" && onClose();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKey);
+    closeRef.current?.focus();
+    return () => { document.body.style.overflow = previousOverflow; window.removeEventListener("keydown", handleKey); };
+  }, [onClose]);
+
+  return (
+    <motion.div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      <motion.div role="dialog" aria-modal="true" aria-labelledby="outside-knowledge-title" className="knowledge-modal" initial={{ opacity: 0, y: 18, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.99 }}>
+        <button ref={closeRef} className="modal-close" onClick={onClose} aria-label="Close education details"><span aria-hidden="true">×</span></button>
+        <p className="eyebrow">Outside the core technical track</p>
+        <h2 id="outside-knowledge-title">Business knowledge,<br /><em>built with purpose.</em></h2>
+        <div className="knowledge-list">
+          <article><span>2023 — 2024</span><h3>BBA in Applied Accounting</h3><p>BIMT Campus</p></article>
+          <article><span>2023</span><h3>AAT Passed Finalist</h3><p>Accounting and business foundation</p></article>
+        </div>
+        <p className="knowledge-note">Business and accounting knowledge adds the operational and financial context needed to build stronger intelligent systems. The long-term goal is to combine technical depth with domain understanding into one powerful source of knowledge.</p>
       </motion.div>
     </motion.div>
   );
@@ -179,6 +278,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
 export default function Portfolio() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showOutOfScope, setShowOutOfScope] = useState(false);
   return (
     <main>
       <a href="#main-content" className="skip-link">Skip to content</a>
@@ -200,7 +300,6 @@ export default function Portfolio() {
         </motion.div>
         <motion.div className="hero-portrait" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.1, delay: 0.15 }}>
           <div className="portrait-frame"><Image src="/images/ihthisham-profile.png" alt="Portrait of M. Ihthisham Irshad" fill priority sizes="(max-width: 800px) 72vw, 38vw" /></div>
-          <div className="portrait-caption"><span>01</span> Colombo-built. Globally curious.</div>
         </motion.div>
         <div className="scroll-note" aria-hidden="true">Scroll to explore <span>↓</span></div>
       </section>
@@ -246,20 +345,52 @@ export default function Portfolio() {
           <Reveal className="section-label"><span>03</span><p>Capabilities</p></Reveal>
           <Reveal className="skills-heading"><p className="eyebrow">A stack shaped by the problem</p><h2>Models are one layer.<br /><em>Systems are the work.</em></h2></Reveal>
           <div className="skill-list">{skillGroups.map(([title, items], index) => <Reveal key={title} className="skill-row"><span>{String(index + 1).padStart(2, "0")}</span><h3>{title}</h3><p>{items}</p></Reveal>)}</div>
+          <Reveal className="signature-heading"><p className="eyebrow">New capabilities I’m creating</p><h3>Original product ideas,<br /><em>engineered into systems.</em></h3></Reveal>
+          <div className="signature-grid">
+            {signatureCapabilities.map((capability, index) => (
+              <Reveal key={capability.title} className="signature-card">
+                <div><span>{String(index + 1).padStart(2, "0")}</span><i>{capability.state}</i></div>
+                <p className="eyebrow">{capability.project}</p>
+                <h4>{capability.title}</h4>
+                <p>{capability.text}</p>
+              </Reveal>
+            ))}
+          </div>
         </section>
 
         <section className="section experience" id="experience">
-          <Reveal className="section-label"><span>04</span><p>Experience</p></Reveal>
-          <div className="timeline">
-            <Reveal className="timeline-entry"><div><span>Nov 2025 — Present</span><i>Current</i></div><div><p className="eyebrow">Independent practice</p><h3>Freelance Machine Learning Engineer</h3><p>Designing AI applications across agentic workflows, RAG systems, semantic retrieval, and FastAPI services. Current work includes ARA, Insight, Lak-Arthika, Vantage, and Stickyy.</p></div></Reveal>
-            <Reveal className="timeline-entry"><div><span>2024 — 2025</span></div><div><p className="eyebrow">ProTron Technologies</p><h3>Full-Stack Engineer & Data Analyst</h3><p>Built data-driven applications, analytical dashboards, predictive models, and automated reporting workflows across Python, React, SQL, and business-intelligence tools.</p></div></Reveal>
+          <div className="experience-intro">
+            <Reveal className="section-label"><span>04</span><p>Experience</p></Reveal>
+            <Reveal><p className="eyebrow">Applied across the full stack</p><h2>Building intelligence<br /><em>in the real world.</em></h2></Reveal>
+          </div>
+          <div className="experience-cards">
+            <Reveal className="experience-card current-role">
+              <div className="role-top"><span>01</span><i>Current practice</i></div>
+              <p className="role-date">Nov 2025 — Present</p>
+              <h3>Freelance Machine Learning Engineer</h3>
+              <p>Designing AI applications across agentic workflows, RAG systems, semantic retrieval, local intelligence, and FastAPI services.</p>
+              <div className="role-tags"><span>Agentic AI</span><span>Multimodal ML</span><span>Product engineering</span></div>
+            </Reveal>
+            <Reveal className="experience-card">
+              <div className="role-top"><span>02</span><i>ProTron Technologies</i></div>
+              <p className="role-date">2024 — 2025</p>
+              <h3>Full-Stack Engineer & Data Analyst</h3>
+              <p>Built data-driven applications, predictive models, dashboards, and automated reporting workflows across Python, React, SQL, and business-intelligence tools.</p>
+              <div className="role-tags"><span>Full-stack</span><span>Data analysis</span><span>Automation</span></div>
+            </Reveal>
           </div>
         </section>
 
         <section className="credentials" id="credentials">
           <div className="section credential-grid">
             <Reveal className="section-label"><span>05</span><p>Learning & proof</p></Reveal>
-            <Reveal className="education-card"><p className="eyebrow">Education</p><h2>BSc in Information Technology</h2><p>Specializing in Data Science</p><div><span>SLIIT</span><span>2023 — Present</span></div></Reveal>
+            <Reveal className="education-card">
+              <p className="eyebrow">Education</p>
+              <h2><strong>Data Science</strong><span>BSc in Information Technology</span></h2>
+              <p>Specialization focused on machine learning, analytics, and intelligent data systems.</p>
+              <div><span>SLIIT</span><span>2023 — Present</span></div>
+              <button className="outside-button" onClick={() => setShowOutOfScope(true)}>Out-of-scope knowledge <Arrow direction="right" /></button>
+            </Reveal>
             <Reveal className="certificate-card">
               <a href="https://credsverse.com/credentials/c2f35cab-9d09-4ee6-afbf-43c2861eddd9?preview=1" target="_blank" rel="noreferrer" aria-label="Verify STEMLink AI Engineering Bootcamp credential">
                 <div className="certificate-image"><Image src="/images/stemlink-certificate.png" alt="STEMLink AI Engineering Bootcamp certificate awarded to Ihthisham Irshad" fill sizes="(max-width: 800px) 100vw, 48vw" /></div>
@@ -271,7 +402,7 @@ export default function Portfolio() {
 
         <section className="section builder" id="github">
           <Reveal className="builder-copy"><p className="eyebrow">GitHub / Builder</p><h2>Ideas are better<br /><em>when they ship.</em></h2></Reveal>
-          <Reveal className="builder-side"><p>Source, experiments, and the engineering behind the work live in the open.</p><a className="button secondary" href="https://github.com/inthiiii" target="_blank" rel="noreferrer">Explore GitHub <Arrow /></a></Reveal>
+          <Reveal className="builder-side"><p>Source, experiments, and the engineering behind the work live in the open.</p><div className="social-actions"><a className="button secondary" href="https://github.com/inthiiii" target="_blank" rel="noreferrer">Explore GitHub <Arrow /></a><a className="button secondary" href="https://www.linkedin.com/in/ihthisham-irshad-296157234/" target="_blank" rel="noreferrer">LinkedIn <Arrow /></a></div></Reveal>
         </section>
 
         <section className="section cv-section" id="cv">
@@ -285,7 +416,10 @@ export default function Portfolio() {
           <footer><p>© 2026 M. Ihthisham Irshad</p><div><a href="https://www.linkedin.com/in/ihthisham-irshad-296157234/" target="_blank" rel="noreferrer">LinkedIn <Arrow /></a><a href="https://github.com/inthiiii" target="_blank" rel="noreferrer">GitHub <Arrow /></a><a href="#top">Back to top ↑</a></div></footer>
         </section>
       </div>
-      <AnimatePresence>{selectedProject && <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />}</AnimatePresence>
+      <AnimatePresence>
+        {selectedProject && <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />}
+        {showOutOfScope && <KnowledgeModal onClose={() => setShowOutOfScope(false)} />}
+      </AnimatePresence>
     </main>
   );
 }
