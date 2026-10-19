@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 type Project = {
   id: string; name: string; eyebrow: string; short: string; description: string;
-  image: string; github?: string; live?: string; download?: string; status?: string; stack: string[];
+  image: string; github?: string; live?: string; status?: string; stack: string[];
   detail: string[]; featured?: boolean; team?: { name: string; url: string }[];
   featureCards?: { title: string; text: string }[]; futureScope?: string[];
   websitePreview?: string; hintImage?: string;
@@ -86,7 +86,6 @@ const projects: Project[] = [
     short: "A lightweight native scratchpad that keeps fast notes persistent, close, and out of the way.",
     description: "A focused desktop product built around a single promise: ideas should be immediately available without adding workflow friction.",
     image: "/images/project-stickyy.jpg", github: "https://github.com/inthiiii/stickyy", live: "https://stickyyformac.vercel.app", websitePreview: "https://stickyyformac.vercel.app",
-    download: "https://github.com/inthiiii/stickyy/releases/download/v1.0.1/Stickyy-1.0.1.dmg",
     stack: ["macOS", "Native app", "Product design", "Vercel"],
     detail: [
       "Persistent notes with a deliberately lightweight interaction model.",
@@ -147,24 +146,32 @@ const signatureCapabilities = [
     title: "Surgical OS",
     text: "A voice-only, hands-free interaction layer designed so doctors can navigate supported clinical workflows without touching the device.",
     state: "Working concept",
+    image: "/images/project-vitalis.jpg",
+    imageAlt: "Conceptual medical AI interface representing the Vitalis Surgical OS",
   },
   {
     project: "ARA",
     title: "Personal computing layer",
     text: "Deep device control beyond conventional assistant boundaries, expressed through ARA Drop, contextual Writing Tools, and the ambient ARA Orb.",
     state: "Flagship direction",
+    image: "/images/project-ara.jpg",
+    imageAlt: "Ambient personal AI interface representing ARA",
   },
   {
     project: "Insight",
     title: "Spatial knowledge",
     text: "Notes Web connects ideas; AR Notes Pin researches location-based notes that can reappear when the user returns to the place where they were pinned.",
     state: "Active research",
+    image: "/images/insight-ar-location-concept.jpg",
+    imageAlt: "AR notes positioned in a physical environment for Insight",
   },
   {
     project: "Lak-Arthika",
     title: "Geo-Market Intelligence",
     text: "Connects commodity movement over time with regional and market context, turning fragmented data into one explorable intelligence layer.",
     state: "Under development",
+    image: "/images/project-lak-arthika.jpg",
+    imageAlt: "Geospatial commodity intelligence visualization for Lak-Arthika",
   },
 ];
 const navItems = ["About", "Projects", "Skills", "Experience", "Credentials", "Contact"];
@@ -197,14 +204,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
     <motion.div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <motion.div role="dialog" aria-modal="true" aria-labelledby={`modal-${project.id}`} className="project-modal" initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.99 }} transition={{ duration: 0.28 }}>
         <button ref={closeRef} className="modal-close" onClick={onClose} aria-label="Close project details"><span aria-hidden="true">×</span></button>
-        {project.websitePreview ? (
-          <div className="website-preview">
-            <div className="browser-bar" aria-hidden="true"><span /><span /><span /><p>stickyyformac.vercel.app</p></div>
-            <iframe src={project.websitePreview} title="Live preview of the Stickyy website" loading="lazy" />
-          </div>
-        ) : (
-          <div className="modal-image"><Image src={project.image} alt="" fill loading="eager" sizes="(max-width: 800px) 100vw, 820px" /></div>
-        )}
+        <div className="modal-image"><Image src={project.image} alt="" fill loading="eager" sizes="(max-width: 800px) 100vw, 820px" /></div>
         <div className="modal-content">
           <div className="modal-heading">
             <p className="eyebrow">{project.eyebrow}</p>
@@ -212,6 +212,14 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
             {project.status && <span className="status-pill">{project.status}</span>}
           </div>
           <p className="modal-lead">{project.description}</p>
+          {project.websitePreview && project.live && (
+            <div className="site-hero-preview">
+              <div className="browser-bar" aria-hidden="true"><span /><span /><span /><p>stickyyformac.vercel.app</p></div>
+              <iframe src={project.websitePreview} title="Preview of the Stickyy website hero" loading="lazy" tabIndex={-1} />
+              <div className="site-preview-scrim" aria-hidden="true" />
+              <a className="button primary site-preview-link" href={project.live} target="_blank" rel="noreferrer">Visit website <Arrow /></a>
+            </div>
+          )}
           <ul className="detail-list">{project.detail.map((detail) => <li key={detail}>{detail}</li>)}</ul>
           {project.featureCards && (
             <div className="feature-cards">
@@ -238,8 +246,6 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
           )}
           <div className="tag-row">{project.stack.map((item) => <span key={item}>{item}</span>)}</div>
           <div className="modal-actions">
-            {project.live && <a className="button primary" href={project.live} target="_blank" rel="noreferrer">Visit website <Arrow /></a>}
-            {project.download && <a className="button secondary" href={project.download} target="_blank" rel="noreferrer">Download app ↓</a>}
             {project.github && <a className={`button ${project.live ? "quiet" : "primary"}`} href={project.github} target="_blank" rel="noreferrer">{project.live ? "View source" : "View GitHub"} <Arrow /></a>}
           </div>
         </div>
@@ -349,10 +355,13 @@ export default function Portfolio() {
           <div className="signature-grid">
             {signatureCapabilities.map((capability, index) => (
               <Reveal key={capability.title} className="signature-card">
-                <div><span>{String(index + 1).padStart(2, "0")}</span><i>{capability.state}</i></div>
-                <p className="eyebrow">{capability.project}</p>
-                <h4>{capability.title}</h4>
-                <p>{capability.text}</p>
+                <div className="signature-visual"><Image src={capability.image} alt={capability.imageAlt} width={900} height={520} sizes="(max-width: 760px) 100vw, 38vw" /></div>
+                <div className="signature-body">
+                  <div className="signature-meta"><span>{String(index + 1).padStart(2, "0")}</span><i>{capability.state}</i></div>
+                  <p className="eyebrow">{capability.project}</p>
+                  <h4>{capability.title}</h4>
+                  <p>{capability.text}</p>
+                </div>
               </Reveal>
             ))}
           </div>
@@ -386,7 +395,7 @@ export default function Portfolio() {
             <Reveal className="section-label"><span>05</span><p>Learning & proof</p></Reveal>
             <Reveal className="education-card">
               <p className="eyebrow">Education</p>
-              <h2><strong>Data Science</strong><span>BSc in Information Technology</span></h2>
+              <h2><span>BSc in Information Technology</span><strong>Data Science</strong></h2>
               <p>Specialization focused on machine learning, analytics, and intelligent data systems.</p>
               <div><span>SLIIT</span><span>2023 — Present</span></div>
               <button className="outside-button" onClick={() => setShowOutOfScope(true)}>Out-of-scope knowledge <Arrow direction="right" /></button>
